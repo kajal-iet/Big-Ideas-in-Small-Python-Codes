@@ -2,11 +2,11 @@ import random
 NUM_DIGITS=3
 MAX_GUESSES=10
 
-def fun():
+def main():
      print('''Bagels, a deductive logic game.
 By Al Sweigart al@inventwithpython.com
 
-I am thinking of a {}-digit number with no repeated digits.
+I am thinking of a 3(dpends on you difficulty level)-digit number with no repeated digits.
 Try to guess what it is. Here are some clues:
 When I say:    That means:
 Pico         One digit is correct but in the wrong position.
@@ -14,12 +14,29 @@ Fermi        One digit is correct and in the right position.
 Bagels       No digit is correct.
 
 For example, if the secret number was 248 and your guess was 843, the
-clues would be Fermi Pico.'''.format(NUM_DIGITS))
+clues would be Fermi Pico.''')
+     level=input('Choose difficulty level- Easy/Medium/Hard')
+     if(level.lower()=='easy'):
+        NUM_DIGITS=3
+        MAX_GUESSES=10
+        points=1
+     if(level.lower()=='medium'):
+        NUM_DIGITS=4
+        MAX_GUESSES=15
+        points=2
+     if(level.lower()=='hard'):
+        NUM_DIGITS=5
+        MAX_GUESSES=20
+        points=3
+     fun(NUM_DIGITS,MAX_GUESSES,points)
 
+
+def fun(NUM_DIGITS,MAX_GUESSES,points):
+     score=0
      while True:
         # int number=random.randint(100,1000)
         secNum=getsecNum()
-        print(' You have {} guesses to get it.'.format(MAX_GUESSES))
+        print(f''' You have {MAX_GUESSES} guesses to get it. SCORE:{score}''')
         n=1
         while(n<=MAX_GUESSES):
             guessNum=''
@@ -30,6 +47,7 @@ clues would be Fermi Pico.'''.format(NUM_DIGITS))
             print(clues)
             n=n+1
             if(guessNum==secNum):
+             score+=points   
              break
             if(n>MAX_GUESSES):
              print('You are out  of guesses')
@@ -42,7 +60,7 @@ clues would be Fermi Pico.'''.format(NUM_DIGITS))
 
 
 def getClues(guessNum,secNum):
-    if(guessNum==secNum):
+    if(guessNum==secNum):   
      print('You got it!')
     clues=[]
     for i in range(len(guessNum)):
@@ -74,7 +92,7 @@ def getsecNum():
     return secNum
 
 if __name__ == '__main__':
-    fun()
+    main()
 
 
 
