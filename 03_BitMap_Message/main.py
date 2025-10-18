@@ -65,7 +65,7 @@ for line in bitmap.splitlines():
           ch = message[i % len(message)]
           print(color_choice + ch, end="")
           final_out += ch
-          time.sleep(0.01)
+          time.sleep(0.02)
     print()
     final_out += "\n"
 
