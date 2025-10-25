@@ -99,3 +99,38 @@ print('matching birthday in that group', simMatch, 'times. This means')
 print('that', numBDays, 'people have a', probability, '% chance of')
 print('having a matching birthday in their group.')
 print('That\'s probably more than you would think!')
+
+
+
+
+
+
+# Probabilities
+
+import matplotlib.pyplot as plt
+
+a=input('give a range from number')
+b=input('give number to number')
+
+a=int(a)
+b=int(b)
+
+group_sizes = list(range(a,b))
+probabilities = []
+
+
+
+for group_size in group_sizes:
+    match_count = 0
+    for i in range(10000):
+        birthdays = getBirthdays(group_size)
+        if getMatch(birthdays):
+            match_count += 1
+    probabilities.append(match_count / 10000)
+
+plt.plot(group_sizes, probabilities)
+plt.title('Birthday Paradox Simulation')
+plt.xlabel('Number of People in Group')
+plt.ylabel('Probability of a Match')
+plt.grid(True)
+plt.show()
