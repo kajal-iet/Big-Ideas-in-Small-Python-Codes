@@ -15,6 +15,30 @@ CLUBS    = chr(9827) # Character 9827 is 'â™£'.
 # (A list of chr codes is at https://inventwithpython.com/charactermap)
 BACKSIDE = 'backside'
 
+wins = 0
+losses = 0
+ties = 0
+
+
+MAX_PLAYERS = 4
+
+
+print("\n choose difficulty level")
+print("1) Easy- dealer stops at 15 or more \n 2) Normal- Dealer stops at 17(standard)  \n 3) Hard- Dealer sometimes risks upt 18-19")
+
+while True:
+    choice= input("Enter 1,2 or 3 > ").strip()
+    if choice=='1':
+        difficulty='easy'
+        break
+    if choice=='2':
+        difficulty='normal'
+        break
+    if choice=='3':
+        difficulty='hard'
+        break
+
+
 
 def main():
     print('''Blackjack, by Al Sweigart al@inventwithpython.com
@@ -33,91 +57,145 @@ def main():
 
     money = 5000
     while True:  # Main game loop.
+
+        # state the number of players
+        try:
+            numPlayers=int(input("Enter number of players(1-4)"))
+            if 1<=numPlayers<=4:
+                break
+            else:
+                print("please enter between 1 to 4 players ")
+
+
+        except ValueError:
+            print("Invalid input.")
+
+    players=[]
+    for i in range(numPlayers):
+        name = input(f"Enter Player {i+1} name: ") or f"Player{i+1}"
+        players.append({'name': name, 'money': 5000})
+
+
+    while True: 
+
         # Check if the player has run out of money:
-        if money <= 0:
-            print("You're broke!")
-            print("Good thing you weren't playing with real money.")
-            print('Thanks for playing!')
+        active_players = [p for p in players if p['money'] > 0]
+        if not active_players:
+            print("All players are broke! Game over.")
             sys.exit()
 
         # Let the player enter their bet for this round:
-        print('Money:', money)
-        bet = getBet(money)
-
+        # print('Money:', money)
+        # bet = getBet(money)
         # Give the dealer and player two cards from the deck each:
         deck = getDeck()
         dealerHand = [deck.pop(), deck.pop()]
-        playerHand = [deck.pop(), deck.pop()]
+          
+         # Bets for each player 
+        for player in active_players:
+            print(f"\n {player['name']}'s Money: {player['money']}")
+            player['bet']=getBet(player['money'])
+            player['hand']=[deck.pop(),deck.pop()]
 
-        # Handle player actions:
-        print('Bet:', bet)
-        while True:  # Keep looping until player stands or busts.
-            displayHands(playerHand, dealerHand, False)
-            print()
 
-            # Check if the player has bust:
-            if getHandValue(playerHand) > 21:
-                break
 
-            # Get the player's move, either H, S, or D:
-            move = getMove(playerHand, money - bet)
+        # Each players turn
+        for player in active_players:
+            print(f"\n===== {player['name']}'s TURN =====")
+            bet = player['bet']
 
-            # Handle the player actions:
-            if move == 'D':
-                # Player is doubling down, they can increase their bet:
-                additionalBet = getBet(min(bet, (money - bet)))
-                bet += additionalBet
-                print('Bet increased to {}.'.format(bet))
-                print('Bet:', bet)
+            while True:
 
-            if move in ('H', 'D'):
-                # Hit/doubling down takes another card.
-                newCard = deck.pop()
-                rank, suit = newCard
-                print('You drew a {} of {}.'.format(rank, suit))
-                playerHand.append(newCard)
+                displayHands(player['hand'], dealerHand, False)
+                print()
 
-                if getHandValue(playerHand) > 21:
-                    # The player has busted:
-                    continue
+                # Check if the player has bust:
+                if getHandValue(player['hand']) > 21:
+                    break
 
-            if move in ('S', 'D'):
-                # Stand/doubling down stops the player's turn.
-                break
+                # Get the player's move, either H, S, or D:
+                move = getMove(player['hand'], player['money'] - bet)
+
+                # Handle the player actions:
+                if move == 'D':
+                    # Player is doubling down, they can increase their bet:
+                    additionalBet = getBet(min(bet, (player['money'] - bet)))
+                    bet += additionalBet
+                    print('Bet increased to {}.'.format(bet))
+                    print('Bet:', bet)
+
+                if move in ('H', 'D'):
+                    # Hit/doubling down takes another card.
+                    newCard = deck.pop()
+                    rank, suit = newCard
+                    print('You drew a {} of {}.'.format(rank, suit))
+                    player['hand'].append(newCard)
+
+                    if getHandValue(player['hand']) > 21:
+                        # The player has busted:
+                        continue
+
+                if move in ('S', 'D'):
+                    # Stand/doubling down stops the player's turn.
+                    break
+
+            player['final_bet'] = bet
 
         # Handle the dealer's actions:
-        if getHandValue(playerHand) <= 21:
-            while getHandValue(dealerHand) < 17:
-                # The dealer hits:
-                print('Dealer hits...')
-                dealerHand.append(deck.pop())
-                displayHands(playerHand, dealerHand, False)
+        # Dealer’s turn (using AI difficulty)
+        if any(getHandValue(p['hand']) <= 21 for p in active_players):
+            dealer_ai_play(deck, dealerHand, player['hand'], difficulty)
 
-                if getHandValue(dealerHand) > 21:
-                    break  # The dealer has busted.
-                input('Press Enter to continue...')
-                print('\n\n')
+        # Show final hands
+        displayHands(player['hand'], dealerHand, True)
 
-        # Show the final hands:
-        displayHands(playerHand, dealerHand, True)
-
-        playerValue = getHandValue(playerHand)
+        playerValue = getHandValue(player['hand'])
         dealerValue = getHandValue(dealerHand)
-        # Handle whether the player won, lost, or tied:
+
+        # Handle results and update stats
         if dealerValue > 21:
-            print('Dealer busts! You win ${}!'.format(bet))
+            print(f'Dealer busts! You win ${bet}!')
+            wins += 1
             money += bet
-        elif (playerValue > 21) or (playerValue < dealerValue):
+        elif playerValue > 21 or playerValue < dealerValue:
             print('You lost!')
+            losses += 1
             money -= bet
         elif playerValue > dealerValue:
-            print('You won ${}!'.format(bet))
+            print(f'You won ${bet}!')
+            wins += 1
             money += bet
-        elif playerValue == dealerValue:
-            print('It\'s a tie, the bet is returned to you.')
+        else:
+            print("It's a tie, the bet is returned to you.")
+            ties += 1
+
+        # Show session stats
+        print(f'\n🏆 Stats: {wins} Wins | {losses} Losses | {ties} Ties')
 
         input('Press Enter to continue...')
         print('\n\n')
+
+
+def dealer_ai_play(deck,dealerHand,playerHand, difficulty):
+    """Dealer plays automatically based on selected difficulty"""
+
+    if difficulty == 'easy':
+        stop_threshold = 15
+    elif difficulty == 'hard':
+        stop_threshold = random.randint(18, 19)
+    else:
+        stop_threshold = 17
+
+    while getHandValue(dealerHand) < stop_threshold:
+        print('Dealer hits...')
+        dealerHand.append(deck.pop())
+        displayHands(playerHand, dealerHand, False)
+
+        if getHandValue(dealerHand) > 21:
+            break  # The dealer has busted.
+        input('Press Enter to continue...')
+        print('\n\n')
+       
 
 
 def getBet(maxBet):
