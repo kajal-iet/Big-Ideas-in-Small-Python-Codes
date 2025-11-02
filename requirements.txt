@@ -1,3 +1,8 @@
-streamlit>=1.0
+streamlit
 numpy
 tqdm
+streamlit
+datetime
+random
+matplotlib
+pyarrow
