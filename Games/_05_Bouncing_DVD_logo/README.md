@@ -61,7 +61,7 @@ When you run the program, you’ll see multiple DVD logos moving diagonally, bou
 ## TODO list
 
 Multiple Logo Types
-[ ] Instead of just “DVD”, allow users to pick custom text/logos (e.g., their name, emojis, etc.)
+[Done] Instead of just “DVD”, allow users to pick custom text/logos (e.g., their name, emojis, etc.)
 
 Trailing Effect
 [ ] Keep a faint trail behind the moving logo (like a comet tail). You can simulate persistence by re-drawing slightly faded text for old positions.

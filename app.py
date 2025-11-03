@@ -2,6 +2,7 @@ import streamlit as st
 from Games._01_Bagels import main as bagels
 from Games._02_Birthday_Paradox import main as bdayParadox
 from Games._03_BitMap_Message import main as bitmapMessage
+from Games._04_BlackJack import main as blackJack
 
 # -----------------------
 # 🎮 MAIN APP STARTS HERE
@@ -14,7 +15,7 @@ st.markdown("Welcome! Choose a game below to play:")
 # Sidebar navigation
 game_choice = st.sidebar.selectbox(
     "Select a game",
-    ["🏠 Home", "🎲 Bagels", "🎂 Birthday Paradox", "🗺️ Bitmap Message"]
+    ["🏠 Home", "🎲 Bagels", "🎂 Birthday Paradox", "🗺️ Bitmap Message","🃏 BlackJack"]
 )
 
 
@@ -33,7 +34,7 @@ if game_choice == "🏠 Home":
     st.markdown("- 🎲 Bagels(guess number))")
     st.markdown("- 🎂 Birthday Paradox (probability simulator)")
     st.markdown("- 🗺️ Bitmap Message (text-art generator)")
-    st.markdown("- 🔢 Guess the Number (classic number guessing)")
+    st.markdown("- 🃏 BlackJack (hit until gets 21)")
 
 elif game_choice == "🎲 Bagels":
     bagels.run()
@@ -43,3 +44,6 @@ elif game_choice == "🎂 Birthday Paradox":
 
 elif game_choice == "🗺️ Bitmap Message":
     bitmapMessage.run()
+
+elif game_choice=="🃏 BlackJack":
+     blackJack.run()
