@@ -1,184 +1,67 @@
-"""Blackjack, by Al Sweigart al@inventwithpython.com
-The classic card game also known as 21. (This version doesn't have
-splitting or insurance.)
-More info at: https://en.wikipedia.org/wiki/Blackjack
-This code is available at https://nostarch.com/big-book-small-python-programming
-Tags: large, game, card game"""
+# blackjack_streamlit.py
+# Streamlit wrapper for the "Big Book" Blackjack game logic.
+# Preserves original rules and options (multiplayer, betting, double down, difficulty).
 
-import random, sys
+import streamlit as st
+import random
+import sys
 
-# Set up the constants:
-HEARTS   = chr(9829) # Character 9829 is 'â™¥'.
-DIAMONDS = chr(9830) # Character 9830 is 'â™¦'.
-SPADES   = chr(9824) # Character 9824 is 'â™ '.
-CLUBS    = chr(9827) # Character 9827 is 'â™£'.
-# (A list of chr codes is at https://inventwithpython.com/charactermap)
+# --- Constants / Globals (visual) ---
+HEARTS   = chr(9829)
+DIAMONDS = chr(9830)
+SPADES   = chr(9824)
+CLUBS    = chr(9827)
 BACKSIDE = 'backside'
-
-wins = 0
-losses = 0
-ties = 0
-
 
 MAX_PLAYERS = 4
 
+# --- Core game helper functions (kept logic identical) ---
 
-print("\n choose difficulty level")
-print("1) Easy- dealer stops at 15 or more \n 2) Normal- Dealer stops at 17(standard)  \n 3) Hard- Dealer sometimes risks upt 18-19")
+def getDeck():
+    deck = []
+    for suit in (HEARTS, DIAMONDS, SPADES, CLUBS):
+        for rank in range(2, 11):
+            deck.append((str(rank), suit))
+        for rank in ('J', 'Q', 'K', 'A'):
+            deck.append((rank, suit))
+    random.shuffle(deck)
+    return deck
 
-while True:
-    choice= input("Enter 1,2 or 3 > ").strip()
-    if choice=='1':
-        difficulty='easy'
-        break
-    if choice=='2':
-        difficulty='normal'
-        break
-    if choice=='3':
-        difficulty='hard'
-        break
-
-
-
-def main():
-    print('''Blackjack, by Al Sweigart al@inventwithpython.com
-
-    Rules:
-      Try to get as close to 21 without going over.
-      Kings, Queens, and Jacks are worth 10 points.
-      Aces are worth 1 or 11 points.
-      Cards 2 through 10 are worth their face value.
-      (H)it to take another card.
-      (S)tand to stop taking cards.
-      On your first play, you can (D)ouble down to increase your bet
-      but must hit exactly one more time before standing.
-      In case of a tie, the bet is returned to the player.
-      The dealer stops hitting at 17.''')
-
-    money = 5000
-    while True:  # Main game loop.
-
-        # state the number of players
-        try:
-            numPlayers=int(input("Enter number of players(1-4)"))
-            if 1<=numPlayers<=4:
-                break
-            else:
-                print("please enter between 1 to 4 players ")
-
-
-        except ValueError:
-            print("Invalid input.")
-
-    players=[]
-    for i in range(numPlayers):
-        name = input(f"Enter Player {i+1} name: ") or f"Player{i+1}"
-        players.append({'name': name, 'money': 5000})
-
-
-    while True: 
-
-        # Check if the player has run out of money:
-        active_players = [p for p in players if p['money'] > 0]
-        if not active_players:
-            print("All players are broke! Game over.")
-            sys.exit()
-
-        # Let the player enter their bet for this round:
-        # print('Money:', money)
-        # bet = getBet(money)
-        # Give the dealer and player two cards from the deck each:
-        deck = getDeck()
-        dealerHand = [deck.pop(), deck.pop()]
-          
-         # Bets for each player 
-        for player in active_players:
-            print(f"\n {player['name']}'s Money: {player['money']}")
-            player['bet']=getBet(player['money'])
-            player['hand']=[deck.pop(),deck.pop()]
-
-
-
-        # Each players turn
-        for player in active_players:
-            print(f"\n===== {player['name']}'s TURN =====")
-            bet = player['bet']
-
-            while True:
-
-                displayHands(player['hand'], dealerHand, False)
-                print()
-
-                # Check if the player has bust:
-                if getHandValue(player['hand']) > 21:
-                    break
-
-                # Get the player's move, either H, S, or D:
-                move = getMove(player['hand'], player['money'] - bet)
-
-                # Handle the player actions:
-                if move == 'D':
-                    # Player is doubling down, they can increase their bet:
-                    additionalBet = getBet(min(bet, (player['money'] - bet)))
-                    bet += additionalBet
-                    print('Bet increased to {}.'.format(bet))
-                    print('Bet:', bet)
-
-                if move in ('H', 'D'):
-                    # Hit/doubling down takes another card.
-                    newCard = deck.pop()
-                    rank, suit = newCard
-                    print('You drew a {} of {}.'.format(rank, suit))
-                    player['hand'].append(newCard)
-
-                    if getHandValue(player['hand']) > 21:
-                        # The player has busted:
-                        continue
-
-                if move in ('S', 'D'):
-                    # Stand/doubling down stops the player's turn.
-                    break
-
-            player['final_bet'] = bet
-
-        # Handle the dealer's actions:
-        # Dealer’s turn (using AI difficulty)
-        if any(getHandValue(p['hand']) <= 21 for p in active_players):
-            dealer_ai_play(deck, dealerHand, player['hand'], difficulty)
-
-        # Show final hands
-        displayHands(player['hand'], dealerHand, True)
-
-        playerValue = getHandValue(player['hand'])
-        dealerValue = getHandValue(dealerHand)
-
-        # Handle results and update stats
-        if dealerValue > 21:
-            print(f'Dealer busts! You win ${bet}!')
-            wins += 1
-            money += bet
-        elif playerValue > 21 or playerValue < dealerValue:
-            print('You lost!')
-            losses += 1
-            money -= bet
-        elif playerValue > dealerValue:
-            print(f'You won ${bet}!')
-            wins += 1
-            money += bet
+def getHandValue(cards):
+    value = 0
+    numberOfAces = 0
+    for card in cards:
+        rank = card[0]
+        if rank == 'A':
+            numberOfAces += 1
+        elif rank in ('K', 'Q', 'J'):
+            value += 10
         else:
-            print("It's a tie, the bet is returned to you.")
-            ties += 1
+            value += int(rank)
+    value += numberOfAces
+    for _ in range(numberOfAces):
+        if value + 10 <= 21:
+            value += 10
+    return value
 
-        # Show session stats
-        print(f'\n🏆 Stats: {wins} Wins | {losses} Losses | {ties} Ties')
+def render_cards(cards, hide_first=False):
+    """Return ascii text for a list of cards (string)."""
+    rows = ['', '', '', '', '']
+    for i, card in enumerate(cards):
+        rows[0] += ' ___  '
+        if card == BACKSIDE and hide_first:
+            rows[1] += '|## | '
+            rows[2] += '|###| '
+            rows[3] += '|_##| '
+        else:
+            rank, suit = card
+            rows[1] += f'|{rank.ljust(2)} | '
+            rows[2] += f'| {suit} | '
+            rows[3] += f'|_{rank.rjust(2, "_")}| '
+    return "\n".join(rows)
 
-        input('Press Enter to continue...')
-        print('\n\n')
-
-
-def dealer_ai_play(deck,dealerHand,playerHand, difficulty):
-    """Dealer plays automatically based on selected difficulty"""
-
+# Dealer AI same logic as original
+def dealer_ai_play(deck, dealerHand, difficulty):
     if difficulty == 'easy':
         stop_threshold = 15
     elif difficulty == 'hard':
@@ -187,133 +70,248 @@ def dealer_ai_play(deck,dealerHand,playerHand, difficulty):
         stop_threshold = 17
 
     while getHandValue(dealerHand) < stop_threshold:
-        print('Dealer hits...')
         dealerHand.append(deck.pop())
-        displayHands(playerHand, dealerHand, False)
+    return dealerHand
 
-        if getHandValue(dealerHand) > 21:
-            break  # The dealer has busted.
-        input('Press Enter to continue...')
-        print('\n\n')
-       
+# --- Streamlit run() entrypoint ---
 
+def run():
+    st.header("🃏 Blackjack (Streamlit edition)")
 
-def getBet(maxBet):
-    """Ask the player how much they want to bet for this round."""
-    while True:  # Keep asking until they enter a valid amount.
-        print('How much do you bet? (1-{}, or QUIT)'.format(maxBet))
-        bet = input('> ').upper().strip()
-        if bet == 'QUIT':
-            print('Thanks for playing!')
-            sys.exit()
+    # Sidebar difficulty selection (with unique key)
+    difficulty = st.sidebar.selectbox(
+        "Choose difficulty",
+        ["normal", "easy", "hard"],
+        index=0,
+        key="difficulty_select"
+    )
+    st.sidebar.write("Dealer behavior:")
+    st.sidebar.write("- easy: stops at 15+")
+    st.sidebar.write("- normal: stops at 17")
+    st.sidebar.write("- hard: may risk 18-19")
 
-        if not bet.isdecimal():
-            continue  # If the player didn't enter a number, ask again.
+    # Initialize session state
+    if 'bj_initialized' not in st.session_state:
+        st.session_state.bj_initialized = True
+        st.session_state.wins = 0
+        st.session_state.losses = 0
+        st.session_state.ties = 0
+        st.session_state.players = []
+        st.session_state.deck = []
+        st.session_state.dealerHand = []
+        st.session_state.phase = 'setup'
+        st.session_state.current_player_index = 0
+        st.session_state.message = ""
+        st.session_state.numPlayers = 1
 
-        bet = int(bet)
-        if 1 <= bet <= maxBet:
-            return bet  # Player entered a valid bet.
+    st.write("Rules: Get close to 21. Face cards = 10. Aces = 1 or 11.")
+    st.write("---")
 
+    # ---------- SETUP ----------
+    if st.session_state.phase == 'setup':
+        st.subheader("Game Setup")
 
-def getDeck():
-    """Return a list of (rank, suit) tuples for all 52 cards."""
-    deck = []
-    for suit in (HEARTS, DIAMONDS, SPADES, CLUBS):
-        for rank in range(2, 11):
-            deck.append((str(rank), suit))  # Add the numbered cards.
-        for rank in ('J', 'Q', 'K', 'A'):
-            deck.append((rank, suit))  # Add the face and ace cards.
-    random.shuffle(deck)
-    return deck
+        num = st.number_input(
+            "Number of players (1-4):",
+            min_value=1,
+            max_value=MAX_PLAYERS,
+            value=1,
+            step=1,
+            key="num_players_input"
+        )
+        st.session_state.numPlayers = num
 
+        player_names = []
+        for i in range(num):
+            default = f"Player{i+1}"
+            name = st.text_input(
+                f"Name for Player {i+1}:",
+                value=default,
+                key=f"name_input_{i}"
+            )
+            player_names.append(name or default)
 
-def displayHands(playerHand, dealerHand, showDealerHand):
-    """Show the player's and dealer's cards. Hide the dealer's first
-    card if showDealerHand is False."""
-    print()
-    if showDealerHand:
-        print('DEALER:', getHandValue(dealerHand))
-        displayCards(dealerHand)
-    else:
-        print('DEALER: ???')
-        # Hide the dealer's first card:
-        displayCards([BACKSIDE] + dealerHand[1:])
+        # Start Round button
+        if st.button("Start Round", key="start_round_btn"):
+            players = []
+            existing = {p['name']: p for p in st.session_state.players} if st.session_state.players else {}
+            for i, nm in enumerate(player_names):
+                pmoney = existing.get(nm, {}).get('money', 5000)
+                players.append({'name': nm, 'money': pmoney, 'hand': [], 'bet': 0, 'final_bet': 0})
+            st.session_state.players = players
 
-    # Show the player's cards:
-    print('PLAYER:', getHandValue(playerHand))
-    displayCards(playerHand)
+            st.session_state.deck = getDeck()
+            st.session_state.dealerHand = [st.session_state.deck.pop(), st.session_state.deck.pop()]
+            st.session_state.current_player_index = 0
+            st.session_state.message = ""
+            st.session_state.phase = 'betting'
+            st.rerun()
 
+        return
 
-def getHandValue(cards):
-    """Returns the value of the cards. Face cards are worth 10, aces are
-    worth 11 or 1 (this function picks the most suitable ace value)."""
-    value = 0
-    numberOfAces = 0
+    # ---------- BETTING ----------
+    if st.session_state.phase == 'betting':
+        st.subheader("Place Bets")
+        active_players = [p for p in st.session_state.players if p['money'] > 0]
+        if not active_players:
+            st.info("All players are broke! Game over.")
+            st.session_state.phase = 'setup'
+            return
 
-    # Add the value for the non-ace cards:
-    for card in cards:
-        rank = card[0]  # card is a tuple like (rank, suit)
-        if rank == 'A':
-            numberOfAces += 1
-        elif rank in ('K', 'Q', 'J'):  # Face cards are worth 10 points.
-            value += 10
+        all_bet_done = True
+        for i, player in enumerate(st.session_state.players):
+            st.write(f"**{player['name']}** — Money: ${player['money']}")
+            if player['money'] <= 0:
+                st.write("Broke — skipped.")
+                continue
+
+            if player['bet'] == 0:
+                bet = st.number_input(
+                    f"Bet for {player['name']} (1-{player['money']}):",
+                    min_value=1,
+                    max_value=player['money'],
+                    value=1,
+                    key=f"bet_input_{i}"
+                )
+                if st.button(f"Confirm bet for {player['name']}", key=f"confirm_bet_btn_{i}"):
+                    player['bet'] = int(bet)
+                    player['hand'] = [st.session_state.deck.pop(), st.session_state.deck.pop()]
+                    st.rerun()
+            else:
+                st.write(f"Bet placed: ${player['bet']}")
+
+            if player['bet'] == 0 and player['money'] > 0:
+                all_bet_done = False
+
+        if all_bet_done:
+            st.success("All bets placed! Starting turns...")
+            st.session_state.phase = "play"
+            st.rerun()
+
+        st.info("Place bets for each player and confirm. When all are done, the game will begin.")
+        return
+
+    # ---------- PLAY ----------
+    if st.session_state.phase == 'play':
+        players = st.session_state.players
+        idx = st.session_state.current_player_index
+
+        while idx < len(players) and (players[idx]['money'] <= 0 or players[idx]['bet'] == 0):
+            idx += 1
+
+        if idx >= len(players):
+            st.session_state.phase = 'dealer'
+            st.rerun()
+
+        player = players[idx]
+        st.subheader(f"Turn: {player['name']}")
+        st.write(f"Money: ${player['money']} | Current Bet: ${player['bet']}")
+        st.text("Dealer shows (one hidden):")
+        st.text(render_cards([BACKSIDE] + st.session_state.dealerHand[1:], hide_first=True))
+        st.text("Your hand:")
+        st.text(render_cards(player['hand']))
+        st.write("Your total:", getHandValue(player['hand']))
+
+        if getHandValue(player['hand']) > 21:
+            st.write("You already busted.")
+            player['final_bet'] = player['bet']
+            st.session_state.current_player_index += 1
+            st.rerun()
+
+        col1, col2, col3 = st.columns(3)
+        with col1:
+            if st.button("Hit", key=f"hit_btn_{idx}"):
+                player['hand'].append(st.session_state.deck.pop())
+                st.rerun()
+        with col2:
+            if st.button("Stand", key=f"stand_btn_{idx}"):
+                player['final_bet'] = player['bet']
+                st.session_state.current_player_index += 1
+                st.rerun()
+        with col3:
+            can_double = len(player['hand']) == 2 and (player['money'] - player['bet']) >= player['bet']
+            if can_double and st.button("Double down", key=f"double_btn_{idx}"):
+                player['bet'] *= 2
+                player['final_bet'] = player['bet']
+                player['hand'].append(st.session_state.deck.pop())
+                st.session_state.current_player_index += 1
+                st.rerun()
+
+        st.write("Tip: Hit until you stand or bust. Double down allowed only on your first move.")
+        if st.button("End turn (force)", key=f"end_turn_btn_{idx}"):
+            player['final_bet'] = player['bet']
+            st.session_state.current_player_index += 1
+            st.rerun()
+        return
+
+    # ---------- DEALER ----------
+    if st.session_state.phase == 'dealer':
+        st.subheader("Dealer's Turn")
+        st.text("Dealer's hand:")
+        st.text(render_cards(st.session_state.dealerHand))
+        st.write("Dealer total:", getHandValue(st.session_state.dealerHand))
+
+        if any(getHandValue(p['hand']) <= 21 for p in st.session_state.players if p['bet'] > 0):
+            st.write("Dealer is playing...")
+            st.session_state.dealerHand = dealer_ai_play(st.session_state.deck, st.session_state.dealerHand, difficulty)
+            st.write("Dealer finished.")
+            st.text(render_cards(st.session_state.dealerHand))
+            st.write("Dealer total:", getHandValue(st.session_state.dealerHand))
         else:
-            value += int(rank)  # Numbered cards are worth their number.
+            st.write("No active players left (all busted).")
 
-    # Add the value for the aces:
-    value += numberOfAces  # Add 1 per ace.
-    for i in range(numberOfAces):
-        # If another 10 can be added without busting, do so:
-        if value + 10 <= 21:
-            value += 10
+        if st.button("Resolve round", key="resolve_btn"):
+            st.session_state.phase = 'resolve'
+            st.rerun()
+        return
 
-    return value
+    # ---------- RESOLVE ----------
+    if st.session_state.phase == 'resolve':
+        st.subheader("Round Results")
+        dealerValue = getHandValue(st.session_state.dealerHand)
+        for player in st.session_state.players:
+            if player['bet'] == 0 or player['money'] <= 0:
+                continue
+            playerValue = getHandValue(player['hand'])
+            bet = player.get('final_bet', player['bet'])
+            if dealerValue > 21:
+                st.write(f"{player['name']}: Dealer busts! You win ${bet}!")
+                st.session_state.wins += 1
+                player['money'] += bet
+            elif playerValue > 21 or playerValue < dealerValue:
+                st.write(f"{player['name']}: You lost ${bet}.")
+                st.session_state.losses += 1
+                player['money'] -= bet
+            elif playerValue > dealerValue:
+                st.write(f"{player['name']}: You won ${bet}!")
+                st.session_state.wins += 1
+                player['money'] += bet
+            else:
+                st.write(f"{player['name']}: It's a tie — bet returned.")
+                st.session_state.ties += 1
+            player['bet'] = 0
+            player['final_bet'] = 0
 
+        st.write("---")
+        st.write(f"🏆 Stats: {st.session_state.wins} Wins | {st.session_state.losses} Losses | {st.session_state.ties} Ties")
 
-def displayCards(cards):
-    """Display all the cards in the cards list."""
-    rows = ['', '', '', '', '']  # The text to display on each row.
+        st.write("Player balances:")
+        for player in st.session_state.players:
+            st.write(f"{player['name']}: ${player['money']}")
 
-    for i, card in enumerate(cards):
-        rows[0] += ' ___  '  # Print the top line of the card.
-        if card == BACKSIDE:
-            # Print a card's back:
-            rows[1] += '|## | '
-            rows[2] += '|###| '
-            rows[3] += '|_##| '
-        else:
-            # Print the card's front:
-            rank, suit = card  # The card is a tuple data structure.
-            rows[1] += '|{} | '.format(rank.ljust(2))
-            rows[2] += '| {} | '.format(suit)
-            rows[3] += '|_{}| '.format(rank.rjust(2, '_'))
-
-    # Print each row on the screen:
-    for row in rows:
-        print(row)
-
-
-def getMove(playerHand, money):
-    """Asks the player for their move, and returns 'H' for hit, 'S' for
-    stand, and 'D' for double down."""
-    while True:  # Keep looping until the player enters a correct move.
-        # Determine what moves the player can make:
-        moves = ['(H)it', '(S)tand']
-
-        # The player can double down on their first move, which we can
-        # tell because they'll have exactly two cards:
-        if len(playerHand) == 2 and money > 0:
-            moves.append('(D)ouble down')
-
-        # Get the player's move:
-        movePrompt = ', '.join(moves) + '> '
-        move = input(movePrompt).upper()
-        if move in ('H', 'S'):
-            return move  # Player has entered a valid move.
-        if move == 'D' and '(D)ouble down' in moves:
-            return move  # Player has entered a valid move.
-
-
-# If the program is run (instead of imported), run the game:
-if __name__ == '__main__':
-    main()
+        col1, col2 = st.columns(2)
+        with col1:
+            if st.button("Play another round", key="new_round_btn"):
+                st.session_state.deck = getDeck()
+                st.session_state.dealerHand = [st.session_state.deck.pop(), st.session_state.deck.pop()]
+                for p in st.session_state.players:
+                    p['hand'] = []
+                    p['bet'] = 0
+                    p['final_bet'] = 0
+                st.session_state.phase = 'betting'
+                st.session_state.current_player_index = 0
+                st.rerun()
+        with col2:
+            if st.button("Back to Home (end session)", key="end_session_btn"):
+                st.session_state.phase = 'setup'
+                st.rerun()
