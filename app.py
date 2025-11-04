@@ -3,6 +3,7 @@ from Games._01_Bagels import main as bagels
 from Games._02_Birthday_Paradox import main as bdayParadox
 from Games._03_BitMap_Message import main as bitmapMessage
 from Games._04_BlackJack import main as blackJack
+from Games._05_Bouncing_DVD_logo import main as bouncingDVD
 
 # -----------------------
 # 🎮 MAIN APP STARTS HERE
@@ -15,7 +16,7 @@ st.markdown("Welcome! Choose a game below to play:")
 # Sidebar navigation
 game_choice = st.sidebar.selectbox(
     "Select a game",
-    ["🏠 Home", "🎲 Bagels", "🎂 Birthday Paradox", "🗺️ Bitmap Message","🃏 BlackJack"]
+    ["🏠 Home", "🎲 Bagels", "🎂 Birthday Paradox", "🗺️ Bitmap Message","🃏 BlackJack","💿 Bouncing DVD Logo"]
 )
 
 
@@ -35,6 +36,7 @@ if game_choice == "🏠 Home":
     st.markdown("- 🎂 Birthday Paradox (probability simulator)")
     st.markdown("- 🗺️ Bitmap Message (text-art generator)")
     st.markdown("- 🃏 BlackJack (hit until gets 21)")
+    st.markdown("- 💿 Bouncing DVD Logo")
 
 elif game_choice == "🎲 Bagels":
     bagels.run()
@@ -47,3 +49,6 @@ elif game_choice == "🗺️ Bitmap Message":
 
 elif game_choice=="🃏 BlackJack":
      blackJack.run()
+
+elif game_choice=="💿 Bouncing DVD Logo":
+     bouncingDVD.run()
