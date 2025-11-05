@@ -4,14 +4,21 @@ import random
 import matplotlib.pyplot as plt
 
 def run():
-    st.header("🎂 Birthday Paradox Simulation")
-    st.write('''**By Al Sweigart al@inventwithpython.com**
+    st.title("🎂 Birthday Paradox — Probability Simulator")
 
-The Birthday Paradox shows that in a group of N people,  
-the odds that two of them have matching birthdays is surprisingly large.
+    st.markdown("""
+    Ever wondered how likely it is for two people to share the same birthday?  
+    This game simulates that famous probability puzzle — the **Birthday Paradox**! 🎉  
 
-This program performs repeated random simulations to explore this concept.  
-(It’s not actually a paradox — just a surprising result!)''')
+    **How it works:**  
+    - Choose how many people are in the room.  
+    - The program randomly generates birthdays for everyone.  
+    - It then checks if any two birthdays match.  
+    - Run multiple simulations to see how surprisingly often duplicates occur!  
+
+    💡 *Fun fact:* With just **23 people**, there’s about a **50% chance** two share a birthday!
+    """)
+    st.divider()
 
     # --- Inputs ---
     numBDays = st.number_input("How many birthdays shall I generate? (1–100)", 1, 100, 23)

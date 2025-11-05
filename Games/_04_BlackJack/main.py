@@ -76,7 +76,22 @@ def dealer_ai_play(deck, dealerHand, difficulty):
 # --- Streamlit run() entrypoint ---
 
 def run():
-    st.header("🃏 Blackjack (Streamlit edition)")
+    st.title("🃏 Blackjack (Streamlit edition)")
+    
+    st.markdown("""
+    A simplified version of the casino classic 🎲  
+
+    **How to play:**  
+    - The goal is to get as close to **21** as possible without going over.  
+    - You start with two cards; face values are added together.  
+    - Click **Hit** to draw another card, or **Stand** to stop.  
+    - If your hand exceeds 21, you **bust** and lose the round!  
+    - Dealer plays after you and must hit until reaching 17 or higher.  
+
+    💡 Tip: Aces count as **1 or 11**, whichever helps your score the most.
+    """)
+    st.divider()
+
 
     # Sidebar difficulty selection (with unique key)
     difficulty = st.sidebar.selectbox(

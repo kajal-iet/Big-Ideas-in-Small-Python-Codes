@@ -19,12 +19,20 @@ bitmap = """
 """
 
 def run():
-    st.title("🗺️ Bitmap Message Generator")
+    st.title("🗺️ Bitmap Message — Text Art Generator")
 
-    st.write("""
-    This program displays a **text message** according to a **bitmap image pattern**.
-    Each non-space character in the bitmap is replaced with letters from your message.
+    st.markdown("""
+    Turn plain text into **ASCII-style pixel art** using a bitmap pattern! 🖋️  
+
+    **How it works:**  
+    - Enter a custom message.  
+    - Each `#` in the bitmap gets replaced with a character from your text.  
+    - Spaces stay empty, so you get a cool text-based visual output.  
+
+    💡 Try with words like *HELLO WORLD*, *PYTHON*, or your name to see your message appear as ASCII art!
     """)
+    st.divider()
+
 
     # Inputs
     message = st.text_input("Enter your message:")

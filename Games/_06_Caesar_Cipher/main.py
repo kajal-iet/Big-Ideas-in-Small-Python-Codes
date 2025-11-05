@@ -32,7 +32,18 @@ def caesar_translate(message: str, key: int, mode: str) -> str:
 
 def run():
     st.title("🔐 Caesar Cipher (Encrypt / Decrypt / Hacker)")
-    st.markdown("Simple Caesar cipher UI. Choose Encrypt or Decrypt. If you forget the key, use **HACK** in Decrypt mode to brute-force all keys.")
+
+    st.markdown("""
+    The **Caesar Cipher** is one of the oldest and simplest encryption techniques —  
+    each letter in your message is shifted by a secret key 🔑.  
+
+    🧩 Modes:
+    - **Encrypt**: Encode your message with a chosen key  
+    - **Decrypt**: Decode it if you know the key  
+    - **Hack Mode**: Forgot the key? Let the Caesar Hacker try **all possible shifts** automatically!  
+
+    💡 Great for learning basic cryptography, substitution ciphers, and brute-force logic.
+    """)
 
     # Choose mode
     mode = st.radio("Mode", ["Encrypt", "Decrypt"], index=0, key="caesar_mode")

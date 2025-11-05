@@ -3,8 +3,22 @@ from PIL import Image, ImageDraw, ImageFont
 import random, time
 
 def run():
-    st.title("💿 Bouncing DVD Logo (Streamlit Edition)")
-    st.markdown("A modern web version of the classic screensaver!")
+    st.title("💿 Bouncing DVD Logo — Retro Animation")
+
+    st.markdown("""
+    Relive the nostalgia! Watch the classic **DVD logo** bounce around the screen.  
+    If you’re lucky, you might see it hit the corner perfectly 😎  
+
+    **How it works:**  
+    - The logo moves diagonally and bounces off the edges.  
+    - You can tweak speed, color, or number of logos for extra fun.  
+    - Try spotting the “corner hit” moment — that’s the jackpot! 💥  
+
+    💡 Press keys (if enabled) to change speed or pause the animation.
+    """)
+    st.divider()
+
+
 
     # --- Layout ---
     left, right = st.columns([1, 2], gap="large")
