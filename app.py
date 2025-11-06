@@ -8,6 +8,7 @@ from Games._06_Caesar_Cipher import main as caeserCipher
 from Games._07_Calendar_Maker import main as calendarMaker
 from Games._08_Carrot_Bluff import main as carrotBluff
 from Games._09_Cho_Han import main as choHan
+from Games._10_Clickbait_Headline_Gen import main as headlinesGen
 
 # -----------------------
 # 🎮 MAIN APP STARTS HERE
@@ -27,7 +28,8 @@ game_choice = st.sidebar.selectbox(
         "🔑 Caesar Cipher",
         "📅 Calendar Maker",
         "🥕 Carrot Bluff",
-        "🎲 Cho Han"
+        "🎲 Cho Han",
+        "📢 Clickbait Headlines"
     ],
 )
 
@@ -60,6 +62,7 @@ if game_choice == "🏠 Home":
     - 📅 **Calendar Maker** — Build monthly notes & to-do lists  
     - 🥕 **Carrot Bluff** — Funny bluffing game for two players
     - 🎲 **Cho Han** — Roll Dice gambling game
+    - 📢 **Clickbait Headlines**- Generates headlines based on your chosen words
     """)
 
     st.markdown("---")
@@ -108,3 +111,6 @@ else:
 
     elif game_choice== "🎲 Cho Han":
         choHan.run()
+    
+    elif game_choice== "📢 Clickbait Headlines":
+        headlinesGen.run()

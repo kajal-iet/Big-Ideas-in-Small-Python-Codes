@@ -39,7 +39,7 @@ Simple conditional logic decides the outcome — ideal for learning control flow
 
 
 ## TODO List
-[ ] Animate the dice roll with Streamlit emoji frames or GIFs.
+[Done] Animate the dice roll with Streamlit emoji frames or GIFs.
 [ ] Add bamboo cup shake and slam sounds using the st.audio() feature.
 [ ] Use Japanese-style colors (gold, red, black) and kanji labels for “Cho” (丁) and “Han” (半).
 [ ] Limit guessing time — if you don’t respond quickly, the dealer automatically decides!
