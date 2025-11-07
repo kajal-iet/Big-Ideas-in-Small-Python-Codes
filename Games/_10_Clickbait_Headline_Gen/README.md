@@ -26,5 +26,6 @@ You Won't Believe What This North Carolina Shovel Found in Her Workplace
 
 
 # TODO List
-[ ] Add a “copy all” or “download as text” button for generated headlines.
-[ ] Make word lists customizable via Streamlit text inputs or file upload.
+[Done] Add a “copy all” or “download as text” button for generated headlines.
+[DOne] Make word lists customizable via Streamlit text inputs or file upload.
+
