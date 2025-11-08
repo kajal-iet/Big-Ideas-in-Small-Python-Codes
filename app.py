@@ -9,6 +9,16 @@ from Games._07_Calendar_Maker import main as calendarMaker
 from Games._08_Carrot_Bluff import main as carrotBluff
 from Games._09_Cho_Han import main as choHan
 from Games._10_Clickbait_Headline_Gen import main as headlinesGen
+from Games._11_Calletz_Sequence import main as collatz
+# from Games._12_Conways_Game import main as conwaysGame
+from Games._13_CountDown import main as countDown
+# from Games._14_DeepCave import main as deepCave
+from Games._15_Diamond import main as diamondGen
+from Games._16_Dice_math import main as Mathquiz
+from Games._17_Dice_Roller import main as diceRoll
+from Games._18_Digital_stream import main as digStream
+from Games._19_DNA_visualization import main as dnaVis
+from Games._20_Ducklings import main as ducklings
 
 # -----------------------
 # 🎮 MAIN APP STARTS HERE
@@ -29,7 +39,17 @@ game_choice = st.sidebar.selectbox(
         "📅 Calendar Maker",
         "🥕 Carrot Bluff",
         "🎲 Cho Han",
-        "📢 Clickbait Headlines"
+        "📢 Clickbait Headlines",
+        "🔢 Collatz Sequence Explore",
+        "🧬 Conway’s Game of Life",
+        "⏱ Countdown Timer",
+        "🕳️ Deep Cave",
+        "💎 Animated Diamonds",
+        "🎲 Dice Math",
+        "🐉 Dice Roller",
+        "💻 Matrix Digital Rain",
+        "🧬 DNA Visualization",
+        "🐥 Ducklings"
     ],
 )
 
@@ -63,11 +83,20 @@ if game_choice == "🏠 Home":
     - 🥕 **Carrot Bluff** — Funny bluffing game for two players
     - 🎲 **Cho Han** — Roll Dice gambling game
     - 📢 **Clickbait Headlines**- Generates headlines based on your chosen words
+    - 🔢 **Collatz Sequence Explore**- also called 3n+1 problem
+    - 🧬 **Conway’s Game of Life**- cell multiplication simulator
+    - ⏱ **Countdown Timer**- Allows you to track productivity
+    - 🕳️ **Deep Cave** – Tunnel Dodger mechanics
+    - 💎 **Animated Diamonds** - Generate rotating and pulsating diamonds
+    - 🎲 **Dice Math** Quiz to guess dice nu,bers sum on screen
+    - 🐉 **Dice Roller** Inspired from dungeons and dragons
+    - 💻 **Matrix Digital Rain** Gives hacker visualization
+    - 🧬 **DNA Visualization**
+
+                
     """)
 
     st.markdown("---")
-    st.caption("Made with ❤️ in Streamlit")
-
 # ------------------------------------------
 # 🎮 INDIVIDUAL GAME PAGES
 # ------------------------------------------
@@ -114,3 +143,33 @@ else:
     
     elif game_choice== "📢 Clickbait Headlines":
         headlinesGen.run()
+
+    elif game_choice=="🔢 Collatz Sequence Explore":
+        collatz.run()
+
+    elif game_choice=="🧬 Conway’s Game of Life":
+        conwaysGame.run()
+
+    elif game_choice== "⏱ Countdown Timer":
+        countDown.run()
+
+    elif game_choice=="🕳️ Deep Cave":
+        deepCave.run()
+
+    elif game_choice=="💎 Animated Diamonds":
+        diamondGen.run()
+
+    elif game_choice=="🎲 Dice Math":
+        Mathquiz.run()
+
+    elif game_choice=="🐉 Dice Roller":
+        diceRoll.run()
+
+    elif game_choice=="💻 Matrix Digital Rain":
+        digStream.run()
+
+    elif game_choice=="🧬 DNA Visualization":
+        dnaVis.run()
+
+    elif game_choice=="🐥 Ducklings":
+        ducklings.run()

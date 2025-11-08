@@ -88,6 +88,25 @@ def run():
     # UI
     # -------------------------
     st.title("🎲 Dice Math – Streamlit Edition")
+    st.markdown("""
+
+        📌 Difficulty Levels
+        Mode	Dice Count	Time	Score
+        Easy	1–3 dice	40 sec	+3 / −1
+        Medium	2–6 dice	30 sec	+4 / −2
+        Hard	4–8 dice	20 sec	+6 / −3
+
+        📌 Game Flow
+
+        1. Choose difficulty.
+        2. Timer begins.
+        3. A new dice layout appears.
+        4. Enter the sum → Submit.
+        5. Score updates.
+        6. New puzzle appears automatically.
+        . Game ends when time reaches 0.
+                """
+    )
 
     # Choose difficulty before starting
     if not st.session_state.game_started:

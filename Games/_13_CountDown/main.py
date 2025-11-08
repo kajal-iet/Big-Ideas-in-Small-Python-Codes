@@ -55,6 +55,30 @@ def run():
 That's it — stay focused!
 """)
 
+    # ----------------------------------------
+# LIVE DIGITAL CLOCK (Seven-Segment)
+# ----------------------------------------
+    clock_placeholder = st.empty()
+
+    def render_digital_clock():
+            now = time.localtime()
+            hours = str(now.tm_hour % 12 or 12)
+            minutes = str(now.tm_min)
+            seconds = str(now.tm_sec)
+
+            hT, hM, hB = sevseg.getSevSegStr(hours, 2).splitlines()
+            mT, mM, mB = sevseg.getSevSegStr(minutes, 2).splitlines()
+            sT, sM, sB = sevseg.getSevSegStr(seconds, 2).splitlines()
+
+            clock_placeholder.code(
+f"""{hT}   {mT}   {sT}
+{hM} * {mM} * {sM}
+{hB} * {mB} * {sB}"""
+            )
+        # language="text")
+
+           
+    render_digital_clock()
 
     # ----------------------------------------
     # STATE INIT
