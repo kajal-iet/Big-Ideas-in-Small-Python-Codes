@@ -260,9 +260,12 @@ def run():
     placeholder = st.empty()
 
     # ANIMATION LOOP
-    while True:
-        simulate()
-        frame = draw_frame()
-        placeholder.code(frame, language="text")
-        st.session_state.frame += 1
-        time.sleep(1 / FPS)
+    simulate()
+    frame = draw_frame()
+    placeholder.code(frame, language="text")
+
+    st.session_state.frame += 1
+
+    time.sleep(1 / FPS)
+    st.rerun()
+
