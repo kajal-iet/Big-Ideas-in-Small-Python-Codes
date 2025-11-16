@@ -5,4 +5,4 @@ matplotlib
 pyarrow
 pandas
 networkx
-PIL
+pillow
