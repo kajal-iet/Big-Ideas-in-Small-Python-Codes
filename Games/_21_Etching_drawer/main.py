@@ -86,11 +86,18 @@ def render_image(canvas):
 def run():
     st.title("🖌 Etching Drawer")
 
-    if 'canvas' not in st.session_state:
+    if "canvas" not in st.session_state:
         st.session_state.canvas = {}
+
+    if "cursor" not in st.session_state:
         st.session_state.cursor = [0, 0]
+
+    if "moves" not in st.session_state:
         st.session_state.moves = []
+
+    if "redo_stack" not in st.session_state:
         st.session_state.redo_stack = []
+
 
     cursorX, cursorY = st.session_state.cursor
 
@@ -139,7 +146,9 @@ def run():
 
     # Rebuild canvas from moves
     st.session_state.canvas = {}
-    cursorX, cursorY = 0, 0
+    # Rebuild from moves
+    cursorX, cursorY = st.session_state.cursor  # restore persisted cursor
+    st.session_state.canvas = {}
 
     for command in st.session_state.moves:
         if (cursorX, cursorY) not in st.session_state.canvas:
@@ -164,6 +173,10 @@ def run():
             st.session_state.canvas[(cursorX, cursorY)].add('D')
             cursorX += 1
             st.session_state.canvas.setdefault((cursorX, cursorY), set()).add('A')
+
+    # SAVE BACK FINAL CURSOR
+    st.session_state.cursor = [cursorX, cursorY]
+
 
     st.markdown(
     """
