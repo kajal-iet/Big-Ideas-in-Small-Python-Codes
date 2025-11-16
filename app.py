@@ -19,6 +19,15 @@ from Games._17_Dice_Roller import main as diceRoll
 from Games._18_Digital_stream import main as digStream
 from Games._19_DNA_visualization import main as dnaVis
 from Games._20_Ducklings import main as ducklings
+from Games._21_Etching_drawer import main as etching
+from Games._22_Factor_Finder import main as factorFinder
+from Games._23_Fast_Draw import main as fastDraw
+from Games._24_Fibonacci import main as fibonacci
+from Games._25_Fish_Tank import main as fishTank
+from Games._26_Flooder import main as flooder
+from Games._27_Forest_SIre_SIm import main as forestSireSim
+from Games._28_Four_in_a_row import main as fourInaRow
+
 
 # -----------------------
 # 🎮 MAIN APP STARTS HERE
@@ -49,7 +58,12 @@ game_choice = st.sidebar.selectbox(
         "🐉 Dice Roller",
         "💻 Matrix Digital Rain",
         "🧬 DNA Visualization",
-        "🐥 Ducklings"
+        "🐥 Ducklings",
+        "🌀 Fibonacci",
+        "🤠 Fast Draw",
+        "🔢 Factor Finder",
+        "🎨 Etching Drawer",
+        "🐟 Fish Tank"
     ],
 )
 
@@ -91,7 +105,11 @@ if game_choice == "🏠 Home":
     - 🎲 **Dice Math** Quiz to guess dice nu,bers sum on screen
     - 🐉 **Dice Roller** Inspired from dungeons and dragons
     - 💻 **Matrix Digital Rain** Gives hacker visualization
-    - 🧬 **DNA Visualization**
+    - 🧬 **DNA Visualization**,
+    - 🌀 **Fibonacci** Sequence Generator
+    - 🤠 **Fast Draw** Reflex Tester
+    - 🔢 **Factor Finder** - Number Analyzer
+    - 🎨 **Etching Drawer** - draws with lines
 
                 
     """)
@@ -173,3 +191,18 @@ else:
 
     elif game_choice=="🐥 Ducklings":
         ducklings.run()
+
+    elif game_choice=="🌀 Fibonacci":
+        fibonacci.run()
+
+    elif game_choice=="🤠 Fast Draw":
+        fastDraw.run()
+    
+    elif game_choice=="🔢 Factor Finder":
+        factorFinder.run()
+
+    elif game_choice=="🎨 Etching Drawer":
+        etching.run()
+    
+    elif game_choice=="🐟 Fish Tank":
+        fishTank.run()
