@@ -6,3 +6,4 @@ pyarrow
 pandas
 networkx
 pillow
+streamlit-drawable-canvas
