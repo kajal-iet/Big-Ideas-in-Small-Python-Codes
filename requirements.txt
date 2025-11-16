@@ -3,3 +3,6 @@ numpy
 tqdm
 matplotlib
 pyarrow
+pandas
+networkx
+PIL
