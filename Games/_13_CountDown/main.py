@@ -1,6 +1,6 @@
 import streamlit as st
 import time
-import sevseg
+from . import sevseg
 import pandas as pd
 
 # ----------------------------------------
