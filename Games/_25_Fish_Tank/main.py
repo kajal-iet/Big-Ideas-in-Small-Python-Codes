@@ -222,6 +222,9 @@ def run():
     - Bubbles rise from random bubblers  
     """)
 
+    if "feed_mode" not in st.session_state:
+     st.session_state.feed_mode = False
+
     col1, col2, col3 = st.columns(3)
     with col1:
         if st.button("Add Fish"):
