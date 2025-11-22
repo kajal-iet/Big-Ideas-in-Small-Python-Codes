@@ -4,7 +4,7 @@ import streamlit.components.v1 as components
 def run(height=650, message="HELLO WORLD"):
 
     # ✅ Streamlit mode switcher
-    st.title()
+    st.title("🧬 DNA Visualization")
     st.markdown(
       """  Displays a scrolling ASCII art double-helix similar to the original terminal animation.
     Includes Normal Mode, Secret Message Reveal, and Download Log options.

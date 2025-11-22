@@ -50,9 +50,9 @@ game_choice = st.sidebar.selectbox(
         "🎲 Cho Han",
         "📢 Clickbait Headlines",
         "🔢 Collatz Sequence Explore",
-        "🧬 Conway’s Game of Life",
+        # "🧬 Conway’s Game of Life",
         "⏱ Countdown Timer",
-        "🕳️ Deep Cave",
+        # "🕳️ Deep Cave",
         "💎 Animated Diamonds",
         "🎲 Dice Math",
         "🐉 Dice Roller",
@@ -62,8 +62,9 @@ game_choice = st.sidebar.selectbox(
         "🌀 Fibonacci",
         "🤠 Fast Draw",
         "🔢 Factor Finder",
-        "🎨 Etching Drawer",
-        "🐟 Fish Tank"
+        # "🎨 Etching Drawer",
+        "🐟 Fish Tank",
+        "🎨 Flooder"
     ],
 )
 
@@ -98,9 +99,9 @@ if game_choice == "🏠 Home":
     - 🎲 **Cho Han** — Roll Dice gambling game
     - 📢 **Clickbait Headlines**- Generates headlines based on your chosen words
     - 🔢 **Collatz Sequence Explore**- also called 3n+1 problem
-    - 🧬 **Conway’s Game of Life**- cell multiplication simulator
+    # - 🧬 **Conway’s Game of Life**- cell multiplication simulator
     - ⏱ **Countdown Timer**- Allows you to track productivity
-    - 🕳️ **Deep Cave** – Tunnel Dodger mechanics
+    # - 🕳️ **Deep Cave** – Tunnel Dodger mechanics
     - 💎 **Animated Diamonds** - Generate rotating and pulsating diamonds
     - 🎲 **Dice Math** Quiz to guess dice nu,bers sum on screen
     - 🐉 **Dice Roller** Inspired from dungeons and dragons
@@ -109,7 +110,8 @@ if game_choice == "🏠 Home":
     - 🌀 **Fibonacci** Sequence Generator
     - 🤠 **Fast Draw** Reflex Tester
     - 🔢 **Factor Finder** - Number Analyzer
-    - 🎨 **Etching Drawer** - draws with lines
+    # - 🎨 **Etching Drawer** - draws with lines,
+    - 🎨 **Flooder**- puzzle game
 
                 
     """)
@@ -165,14 +167,14 @@ else:
     elif game_choice=="🔢 Collatz Sequence Explore":
         collatz.run()
 
-    elif game_choice=="🧬 Conway’s Game of Life":
-        conwaysGame.run()
+    # elif game_choice=="🧬 Conway’s Game of Life":
+    #     conwaysGame.run()
 
     elif game_choice== "⏱ Countdown Timer":
         countDown.run()
 
-    elif game_choice=="🕳️ Deep Cave":
-        deepCave.run()
+    # elif game_choice=="🕳️ Deep Cave":
+    #     deepCave.run()
 
     elif game_choice=="💎 Animated Diamonds":
         diamondGen.run()
@@ -201,8 +203,15 @@ else:
     elif game_choice=="🔢 Factor Finder":
         factorFinder.run()
 
-    elif game_choice=="🎨 Etching Drawer":
-        etching.run()
+    # elif game_choice=="🎨 Etching Drawer":
+    #     etching.run()
     
     elif game_choice=="🐟 Fish Tank":
         fishTank.run()
+
+    elif game_choice=="🎨 Flooder":
+        flooder.run()
+
+  
+
+    
