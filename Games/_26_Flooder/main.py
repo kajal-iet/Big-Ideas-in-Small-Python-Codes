@@ -132,14 +132,19 @@ def run():
             tile = board[(x, y)]
 
             if st.session_state.mode == COLOR_MODE:
-                cols[x].button(
-                    " ",
-                    key=f"{x}-{y}",
-                    disabled=True,
-                    help=str(tile),
-                    use_container_width=True,
-                    style=f"background-color: {COLORS_MAP[tile]}; height:22px;"
+                cols[x].markdown(
+                    f"""
+                    <button style="
+                        background-color:{COLORS_MAP[tile]};
+                        height:25px;
+                        width:25px;
+                        border:none;
+                        border-radius:4px;
+                    " disabled></button>
+                    """,
+                    unsafe_allow_html=True
                 )
+
             else:
                 cols[x].button(
                     SHAPES_MAP[tile],
