@@ -185,11 +185,11 @@ def main():
 
     st.markdown("### 🎮 How to Play")
     st.markdown("""
-    - You start at **top-left** tile  
-    - DOuble Click a color to **expand your connected region**
-    - Goal -> **Make entire board one color**
-    - You have **limited moves**
-    - Flooding spreads only to **adjacent (↑↓←→)** cells
+- You start at **top-left** tile  
+- Double Click a color to **expand your connected region**
+- Goal -> **Make entire board one color**
+- You have **limited moves**
+- Flooding spreads only to **adjacent (↑↓←→)** cells
     """)
 
     with st.sidebar:
