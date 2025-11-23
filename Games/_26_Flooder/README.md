@@ -30,8 +30,8 @@ Originally inspired by Al Sweigart's version from *The Big Book of Small Python 
 [ ] Stats Panel
 [ ] Best score
 [ ] Difficulty Levels (Easy / Medium / Hard)
-[ ] Undo Last Move
+[Done] Undo Last Move
 [ ] Timer Mode
-[ ] Hint System
+[Done] Hint System
 
 
