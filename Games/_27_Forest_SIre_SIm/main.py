@@ -116,7 +116,7 @@ def render_grid(interaction_mode="ignite"):
                 # Click = ignite immediately (set to FIRE)
                 st.session_state.forest[i][j] = FIRE
                 # Immediately update the UI to reflect the ignition
-                st.experimental_rerun()
+                st.rerun()
 
 # ------------------ MAIN UI ------------------
 def main():
@@ -192,14 +192,14 @@ def main():
         st.session_state.forest = create_forest(initial_density)
         st.session_state.moves = 0
         st.session_state.running = False
-        st.experimental_rerun()
+        st.rerun()
 
     if st.sidebar.button("Ignite random tree"):
         trees = [(i, j) for i in range(HEIGHT) for j in range(WIDTH) if st.session_state.forest[i][j] == TREE]
         if trees:
             i, j = random.choice(trees)
             st.session_state.forest[i][j] = FIRE
-            st.experimental_rerun()
+            st.rerun()
 
     st.sidebar.markdown("---")
     st.sidebar.markdown("**Auto-run controls**")
@@ -212,14 +212,14 @@ def main():
     if start:
         st.session_state.running = True
         st.session_state.last_action = "start"
-        st.experimental_rerun()
+        st.rerun()
     if stop:
         st.session_state.running = False
         st.session_state.last_action = "stop"
-        st.experimental_rerun()
+        st.rerun()
     if step:
         step_simulation(grow_chance, lightning_chance, spread_chance, rain_factor)
-        st.experimental_rerun()
+        st.rerun()
 
     # Info & legend
     st.markdown("### Controls & Legend")
@@ -241,7 +241,7 @@ def main():
         # small delay to control speed
         time.sleep(speed)
         # rerun to update UI and continue loop
-        st.experimental_rerun()
+        st.rerun()
 
     # Footer: small notes
     st.markdown("---")
