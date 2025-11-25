@@ -64,7 +64,8 @@ game_choice = st.sidebar.selectbox(
         "🔢 Factor Finder",
         # "🎨 Etching Drawer",
         "🐟 Fish Tank",
-        "🎨 Flooder"
+        "🎨 Flooder",
+        "🌲🔥 Forest Fire Simulation"
     ],
 )
 
@@ -111,7 +112,8 @@ if game_choice == "🏠 Home":
     - 🤠 **Fast Draw** Reflex Tester
     - 🔢 **Factor Finder** - Number Analyzer
     # - 🎨 **Etching Drawer** - draws with lines,
-    - 🎨 **Flooder**- puzzle game
+    - 🎨 **Flooder**- puzzle game,
+    - 🌲🔥 **Forest Fire Simulation **
 
                 
     """)
@@ -211,6 +213,10 @@ else:
 
     elif game_choice=="🎨 Flooder":
         flooder.run()
+
+    elif game_choice=="🌲🔥 Forest Fire Simulation":
+        forestSireSim.run()
+        
 
   
 
