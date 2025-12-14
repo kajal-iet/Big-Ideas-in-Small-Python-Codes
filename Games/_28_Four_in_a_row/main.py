@@ -1,6 +1,5 @@
 import streamlit as st
 
-# ----------------------------
 EMPTY_SPACE = '.'
 PLAYER_X = 'X'
 PLAYER_O = 'O'
@@ -9,57 +8,42 @@ BOARD_HEIGHT = 6
 
 
 def getNewBoard():
-    board = {}
-    for c in range(BOARD_WIDTH):
-        for r in range(BOARD_HEIGHT):
-            board[(c, r)] = EMPTY_SPACE
-    return board
+    return {(c, r): EMPTY_SPACE for c in range(BOARD_WIDTH) for r in range(BOARD_HEIGHT)}
 
 
-def dropTile(board, columnIndex):
-    for rowIndex in range(BOARD_HEIGHT - 1, -1, -1):
-        if board[(columnIndex, rowIndex)] == EMPTY_SPACE:
-            return (columnIndex, rowIndex)
+def dropTile(board, col):
+    for r in range(BOARD_HEIGHT-1, -1, -1):
+        if board[(col, r)] == EMPTY_SPACE:
+            return (col, r)
     return None
 
 
-def isFull(board):
-    return not any(board[pos] == EMPTY_SPACE for pos in board)
+def tile_visual(t):
+    return "🔴" if t == PLAYER_X else "🟡" if t == PLAYER_O else "⚪"
 
 
-def isWinner(playerTile, board):
+def isWinner(t, b):
     for c in range(BOARD_WIDTH - 3):
         for r in range(BOARD_HEIGHT):
-            if board[(c, r)] == board[(c+1, r)] == board[(c+2, r)] == board[(c+3, r)] == playerTile:
+            if b[(c, r)] == b[(c+1, r)] == b[(c+2, r)] == b[(c+3, r)] == t:
                 return True
 
     for c in range(BOARD_WIDTH):
-        for r in range(BOARD_HEIGHT - 3):
-            if board[(c, r)] == board[(c, r+1)] == board[(c, r+2)] == board[(c, r+3)] == playerTile:
+        for r in range(BOARD_HEIGHT-3):
+            if b[(c, r)] == b[(c, r+1)] == b[(c, r+2)] == b[(c, r+3)] == t:
                 return True
 
-    for c in range(BOARD_WIDTH - 3):
-        for r in range(BOARD_HEIGHT - 3):
-            if board[(c, r)] == board[(c+1, r+1)] == board[(c+2, r+2)] == board[(c+3, r+3)] == playerTile:
+    for c in range(BOARD_WIDTH-3):
+        for r in range(BOARD_HEIGHT-3):
+            if b[(c, r)] == b[(c+1, r+1)] == b[(c+2, r+2)] == b[(c+3, r+3)] == t:
                 return True
-            if board[(c+3, r)] == board[(c+2, r+1)] == board[(c+1, r+2)] == board[(c, r+3)] == playerTile:
+            if b[(c+3, r)] == b[(c+2, r+1)] == b[(c+1, r+2)] == b[(c, r+3)] == t:
                 return True
 
     return False
 
 
-# ----------------------------
-# UI symbol mapping
-def tile_visual(tile):
-    if tile == PLAYER_X:
-        return "🔴"
-    if tile == PLAYER_O:
-        return "🟡"
-    return "⚪"
-
-
-# ----------------------------
-def renderBoard(board):
+def render_board(board):
     for r in range(BOARD_HEIGHT):
         cols = st.columns(BOARD_WIDTH)
         for c in range(BOARD_WIDTH):
@@ -70,52 +54,63 @@ def renderBoard(board):
                 )
 
 
-# ----------------------------
+def reset_game():
+    st.session_state.board = getNewBoard()
+    st.session_state.player = PLAYER_X
+    st.session_state.winner = None
+
+
 def run():
 
-    st.title("Connect 4 🟡🔴 (Streamlit Edition)")
+    st.title("Connect 4 🔴🟡")
+    st.markdown(
+        """
+
+    - The board has **7 columns × 6 rows**.
+    - Two players take turns:
+    - 🔴 Player X
+    - 🟡 Player O
+    - On your turn:
+    - Choose a **column (0–6)**
+    - Click **Drop** to place your disc
+    - The disc falls to the **lowest empty space** in the column.
+    - First player to connect **4 discs in a row** wins:
+    - Horizontally
+    - Vertically
+    - Diagonally
+    - Click **Restart Game** to start over.
+    """
+    )
 
     if "board" not in st.session_state:
-        st.session_state.board = getNewBoard()
+        reset_game()
 
-    if "player" not in st.session_state:
-        st.session_state.player = PLAYER_X
+    board = st.session_state.board
+    player = st.session_state.player
+    winner = st.session_state.winner
 
-    # store last selected column safely
-    if "selected_col" not in st.session_state:
-        st.session_state.selected_col = 0      
+    render_board(board)
 
-    st.write("Current Turn:", "🔴" if st.session_state.player == PLAYER_X else "🟡")
+    if winner:
+        st.success(f"Winner: {winner}")
+        if st.button("Restart"):
+            reset_game()
+        return
 
-    renderBoard(st.session_state.board)
+    col = st.number_input("Column (0-6):", min_value=0, max_value=6, step=1)
 
-    # update only on select
-    new_col = st.selectbox("Choose a column:", list(range(BOARD_WIDTH)), index=st.session_state.selected_col)
-    st.session_state.selected_col = new_col   # <<< FIX
-
-
-    if st.button("Drop"):
-        col = st.session_state.selected_col
-
-        pos = dropTile(st.session_state.board, col)
-
+    def on_drop():
+        pos = dropTile(board, col)
         if pos:
-            st.session_state.board[pos] = st.session_state.player
+            board[pos] = player
+            if isWinner(player, board):
+                st.session_state.winner = player
+            else:
+                st.session_state.player = PLAYER_O if player == PLAYER_X else PLAYER_X
 
-            if isWinner(st.session_state.player, st.session_state.board):
-                st.session_state.last_winner = st.session_state.player
-                st.rerun()
+    st.button("Drop", on_click=on_drop)
 
-            if isFull(st.session_state.board):
-                st.session_state.tie = True
-                st.rerun()
-
-            st.session_state.player = (
-                PLAYER_O if st.session_state.player == PLAYER_X
-                else PLAYER_X
-            )
-
-        st.rerun()
+    st.button("Restart Game", on_click=reset_game)
 
 
 
