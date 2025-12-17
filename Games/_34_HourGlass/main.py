@@ -1,106 +1,137 @@
-"""
-Hourglass (Borderless Version), by Al Sweigart
-Modified: Adjustable speed + auto flip
-"""
+import streamlit as st
+import random
+import time
 
-import random, sys, time
+# ------------------ PAGE CONFIG ------------------
+st.set_page_config(
+    page_title="Hourglass Simulation",
+    layout="centered"
+)
 
-try:
-    import bext
-except ImportError:
-    print('This program requires the bext module.')
-    sys.exit()
+WIDTH = 30
+HEIGHT = 24
+SAND = "●"
+EMPTY = " "
+WALL = "#"
 
-# ------------------ CONSTANTS ------------------
-PAUSE_LENGTH = 0.15     # ⭐ Feature 1: speed tuning
-WIDE_FALL_CHANCE = 50
+# ------------------ GLASS GEOMETRY ------------------
+def glass_bounds(y):
+    mid = HEIGHT // 2
+    neck = 2
 
-SCREEN_WIDTH = 79
-SCREEN_HEIGHT = 25
-X, Y = 0, 1
-SAND = chr(9617)
+    if y < mid:
+        spread = (mid - y) // 2
+    else:
+        spread = (y - mid) // 2
 
-# ------------------ INITIAL SAND ------------------
-INITIAL_SAND = set()
-for y in range(8):
-    for x in range(30, 49):
-        INITIAL_SAND.add((x, y + 4))
+    center = WIDTH // 2
+    left = center - neck - spread
+    right = center + neck + spread
+    return left, right
 
-# ------------------ MAIN ------------------
-def main():
-    bext.fg('yellow')
-    bext.clear()
 
-    bext.goto(0, 0)
-    print('Ctrl-C to quit. Hourglass simulation running...', end='')
+def inside_glass(x, y):
+    left, right = glass_bounds(y)
+    return left < x < right
 
-    while True:
-        allSand = list(INITIAL_SAND)
 
-        for sand in allSand:
-            bext.goto(sand[X], sand[Y])
-            print(SAND, end='')
+# ------------------ INIT GRID ------------------
+def create_hourglass():
+    grid = [[EMPTY for _ in range(WIDTH)] for _ in range(HEIGHT)]
 
-        runSimulation(allSand)
+    # Draw walls
+    for y in range(HEIGHT):
+        left, right = glass_bounds(y)
+        grid[y][left] = WALL
+        grid[y][right] = WALL
 
-# ------------------ SIMULATION ------------------
-def runSimulation(allSand):
-    while True:
-        random.shuffle(allSand)
-        sandMoved = False
+    # Fill sand (top half only)
+    for y in range(3, HEIGHT // 2 - 1):
+        left, right = glass_bounds(y)
+        for x in range(left + 1, right):
+            grid[y][x] = SAND
 
-        for i, sand in enumerate(allSand):
-            if sand[Y] >= SCREEN_HEIGHT - 1:
+    return grid
+
+
+# ------------------ PHYSICS STEP ------------------
+def step(grid):
+    moved = False
+
+    for y in range(HEIGHT - 2, -1, -1):
+        xs = list(range(1, WIDTH - 1))
+        random.shuffle(xs)  # ⭐ removes left/right bias
+
+        for x in xs:
+            if grid[y][x] != SAND:
                 continue
 
-            below = (sand[X], sand[Y] + 1)
-            if below not in allSand:
-                moveSand(allSand, i, sand, 0)
-                sandMoved = True
+            # Try straight down first
+            if grid[y + 1][x] == EMPTY and inside_glass(x, y + 1):
+                grid[y][x], grid[y + 1][x] = EMPTY, SAND
+                moved = True
                 continue
 
-            directions = []
-            if sand[X] > 0 and (sand[X] - 1, sand[Y] + 1) not in allSand:
-                directions.append(-1)
-            if sand[X] < SCREEN_WIDTH - 1 and (sand[X] + 1, sand[Y] + 1) not in allSand:
-                directions.append(1)
+            # Try diagonals (random order per grain)
+            directions = [(-1, 1), (1, 1)]
+            random.shuffle(directions)
 
-            if directions:
-                d = random.choice(directions)
-                if random.randint(1, 100) <= WIDE_FALL_CHANCE:
-                    d *= random.choice((1, 2))
-                moveSand(allSand, i, sand, d)
-                sandMoved = True
+            for dx, dy in directions:
+                nx, ny = x + dx, y + dy
+                if (
+                    0 <= nx < WIDTH
+                    and ny < HEIGHT
+                    and grid[ny][nx] == EMPTY
+                    and inside_glass(nx, ny)
+                ):
+                    grid[y][x], grid[ny][nx] = EMPTY, SAND
+                    moved = True
+                    break
 
-        sys.stdout.flush()
-        time.sleep(PAUSE_LENGTH)
+    return moved
 
-        # ⭐ Feature 2: Auto flip (reset when settled)
-        if not sandMoved:
-            time.sleep(1.5)
-            clearSand(allSand)
-            break
 
-# ------------------ HELPERS ------------------
-def moveSand(allSand, index, sand, dx):
-    bext.goto(sand[X], sand[Y])
-    print(' ', end='')
-    new_pos = (sand[X] + dx, sand[Y] + 1)
-    bext.goto(new_pos[X], new_pos[Y])
-    print(SAND, end='')
-    allSand[index] = new_pos
+# ------------------ RENDER ------------------
+def render(grid):
+    return "\n".join("".join(row) for row in grid)
 
-def clearSand(allSand):
-    for sand in allSand:
-        bext.goto(sand[X], sand[Y])
-        print(' ', end='')
+
+# ------------------ APP ------------------
+def run():
+    st.title("⏳ Hourglass")
+    st.caption("Inspired by Al Sweigart — Physics Visualization")
+
+    st.markdown("""
+### ⏳ Rules
+- Sand falls due to **gravity**
+- Grains slide diagonally along the **glass slope**
+- Sand is constrained inside the **hourglass shape**
+- Click **Flip Hourglass** to restart
+    """)
+
+    if "grid" not in st.session_state:
+        st.session_state.grid = create_hourglass()
+
+    col1, col2 = st.columns(2)
+
+    with col1:
+        speed = st.slider("Simulation Speed", 0.01, 0.3, 0.12)
+
+    with col2:
+        if st.button("🔄 Flip Hourglass"):
+            st.session_state.grid = create_hourglass()
+
+    moved = step(st.session_state.grid)
+
+    st.code(render(st.session_state.grid))
+
+    if moved:
+        time.sleep(speed)
+        st.rerun()
+    else:
+        st.info("Sand has settled. Flip the hourglass to continue.")
+
 
 # ------------------ RUN ------------------
-def run():
-    try:
-        main()
-    except KeyboardInterrupt:
-        sys.exit()
-
 if __name__ == "__main__":
     run()

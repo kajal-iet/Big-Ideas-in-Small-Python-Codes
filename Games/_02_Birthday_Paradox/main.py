@@ -4,76 +4,134 @@ import random
 import matplotlib.pyplot as plt
 
 def run():
+
+    # ---------------- UI STYLES (ONLY UI) ----------------
+    st.markdown("""
+    <style>
+    .bp-container {
+        max-width: 600px;
+        margin: auto;
+        padding: 10px;
+    }
+    .bp-card {
+        border: 1px solid #e5e5e5;
+        border-radius: 14px;
+        padding: 16px;
+        margin-bottom: 16px;
+        background: #ffffff;
+    }
+    button {
+        width: 100%;
+        border-radius: 12px;
+        font-size: 16px;
+    }
+    .stSlider, .stNumberInput {
+        padding-top: 6px;
+        padding-bottom: 6px;
+    }
+    </style>
+    """, unsafe_allow_html=True)
+
+    st.markdown('<div class="bp-container">', unsafe_allow_html=True)
+
+    # ---------------- TITLE ----------------
     st.title("🎂 Birthday Paradox — Probability Simulator")
 
     st.markdown("""
     Ever wondered how likely it is for two people to share the same birthday?  
-    This game simulates that famous probability puzzle — the **Birthday Paradox**! 🎉  
 
-    **How it works:**  
-    - Choose how many people are in the room.  
-    - The program randomly generates birthdays for everyone.  
-    - It then checks if any two birthdays match.  
-    - Run multiple simulations to see how surprisingly often duplicates occur!  
-
-    💡 *Fun fact:* With just **23 people**, there’s about a **50% chance** two share a birthday!
+    **Birthday Paradox** shows how fast probability rises — even with small groups 🎉
     """)
-    st.divider()
 
-    # --- Inputs ---
-    numBDays = st.number_input("How many birthdays shall I generate? (1–100)", 1, 100, 23)
-    simulations = st.number_input("How many simulations to run?", 100, 100000, 10000, step=100)
+    # ---------------- INPUT CARD ----------------
+    st.markdown('<div class="bp-card">', unsafe_allow_html=True)
 
-    # Button to trigger simulation
-    if st.button("Run Simulation"):
+    numBDays = st.number_input(
+        "👥 Number of people (1–100)",
+        1, 100, 23
+    )
+
+    simulations = st.number_input(
+        "🔁 Simulations to run",
+        100, 100000, 10000, step=100
+    )
+
+    if st.button("▶ Run Simulation"):
         birthdays = getBirthdays(numBDays)
         match = getMatch(birthdays)
 
-        # Store simulation results in session_state
         st.session_state["birthdays"] = birthdays
         st.session_state["match"] = match
         st.session_state["numBDays"] = numBDays
         st.session_state["simulations"] = simulations
-        st.session_state["simMatch"] = sum(1 for _ in range(simulations) if getMatch(getBirthdays(numBDays)))
+        st.session_state["simMatch"] = sum(
+            1 for _ in range(simulations)
+            if getMatch(getBirthdays(numBDays))
+        )
 
-    # --- Show Results if simulation has already run ---
+    st.markdown('</div>', unsafe_allow_html=True)
+
+    # ---------------- RESULTS ----------------
     if "birthdays" in st.session_state:
+
+        st.markdown('<div class="bp-card">', unsafe_allow_html=True)
+
         birthdays = st.session_state["birthdays"]
         match = st.session_state["match"]
         numBDays = st.session_state["numBDays"]
         simulations = st.session_state["simulations"]
         simMatch = st.session_state["simMatch"]
 
-        st.subheader("Generated Birthdays:")
+        st.subheader("🎈 Generated Birthdays")
         st.write(", ".join([f"{b.day} {b.strftime('%b')}" for b in birthdays]))
 
         if match:
-            st.success(f"🎉 Match found on {match.day} {match.strftime('%b')}!")
+            st.success(f"🎉 Match found on **{match.day} {match.strftime('%b')}**!")
         else:
             st.info("No matching birthdays in this simulation.")
 
         probability = round(simMatch / simulations * 100, 2)
+
         st.markdown(f"""
-        Out of **{simulations}** simulations of **{numBDays}** people:
-        - Matching birthday occurred **{simMatch} times**
-        - Probability ≈ **{probability}%**
+        **Results**
+        - Simulations run: **{simulations}**
+        - People per group: **{numBDays}**
+        - Matches found: **{simMatch}**
+        - Probability: **{probability}%**
         """)
 
-        # --- Graph with persistent state ---
-        st.markdown("### 📊 Probability by Group Size")
-        a, b = st.slider("Range of group sizes", 2, 100, (5, 70))
+        st.markdown('</div>', unsafe_allow_html=True)
+
+        # ---------------- GRAPH CARD ----------------
+        st.markdown('<div class="bp-card">', unsafe_allow_html=True)
+        st.subheader("📊 Probability by Group Size")
+
+        a, b = st.slider(
+            "Group size range",
+            2, 100, (5, 70)
+        )
 
         if "probabilities" not in st.session_state or st.session_state.get("last_range") != (a, b):
             st.session_state["last_range"] = (a, b)
             st.session_state["probabilities"] = calculate_probabilities(a, b)
 
-        fig, ax = plt.subplots()
-        ax.plot(st.session_state["probabilities"]["sizes"], st.session_state["probabilities"]["values"])
+        fig, ax = plt.subplots(figsize=(6, 4))
+        ax.plot(
+            st.session_state["probabilities"]["sizes"],
+            st.session_state["probabilities"]["values"]
+        )
         ax.set_xlabel("Group Size")
         ax.set_ylabel("Probability of a Match")
         ax.set_title("Birthday Paradox Simulation")
-        st.pyplot(fig)
 
+        st.pyplot(fig, use_container_width=True)
+
+        st.markdown('</div>', unsafe_allow_html=True)
+
+    st.markdown('</div>', unsafe_allow_html=True)
+
+
+# ---------------- LOGIC (UNCHANGED) ----------------
 def calculate_probabilities(a, b):
     group_sizes = list(range(a, b))
     probabilities = []
@@ -85,10 +143,12 @@ def calculate_probabilities(a, b):
         probabilities.append(match_count / 1000)
     return {"sizes": group_sizes, "values": probabilities}
 
+
 def getBirthdays(num):
     start = datetime.date(2001, 1, 1)
     birthdays = [start + datetime.timedelta(random.randint(0, 364)) for _ in range(num)]
     return birthdays
+
 
 def getMatch(birthdays):
     seen = set()

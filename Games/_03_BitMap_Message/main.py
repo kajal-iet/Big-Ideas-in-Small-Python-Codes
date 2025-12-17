@@ -2,7 +2,7 @@ import streamlit as st
 import time
 import os
 
-# Your original bitmap (you can replace this with your actual one)
+# ---------------- BITMAP (UNCHANGED) ----------------
 bitmap = """
 ....................................................................
    *************   ***     ***   *************   *************
@@ -19,39 +19,86 @@ bitmap = """
 """
 
 def run():
+
+    # ---------------- UI STYLES (ONLY UI) ----------------
+    st.markdown("""
+    <style>
+    .bm-container {
+        max-width: 650px;
+        margin: auto;
+        padding: 10px;
+    }
+    .bm-card {
+        border: 1px solid #e6e6e6;
+        border-radius: 16px;
+        padding: 16px;
+        margin-bottom: 16px;
+        background: #ffffff;
+    }
+    input[type="text"] {
+        font-size: 18px !important;
+    }
+    button {
+        width: 100%;
+        border-radius: 14px;
+        font-size: 16px;
+        padding: 8px 0;
+    }
+    .output-box {
+        max-height: 320px;
+        overflow-x: auto;
+        overflow-y: auto;
+        border-radius: 12px;
+        padding: 12px;
+        background: #111;
+        margin-top: 10px;
+    }
+    pre {
+        font-size: 13px;
+        line-height: 1.2;
+    }
+    </style>
+    """, unsafe_allow_html=True)
+
+    st.markdown('<div class="bm-container">', unsafe_allow_html=True)
+
+    # ---------------- TITLE ----------------
     st.title("🗺️ Bitmap Message — Text Art Generator")
 
     st.markdown("""
-    Turn plain text into **ASCII-style pixel art** using a bitmap pattern! 🖋️  
+    Turn your text into **ASCII-style pixel art** using a bitmap pattern ✨  
 
-    **How it works:**  
-    - Enter a custom message.  
-    - Each `#` in the bitmap gets replaced with a character from your text.  
-    - Spaces stay empty, so you get a cool text-based visual output.  
-
-    💡 Try with words like *HELLO WORLD*, *PYTHON*, or your name to see your message appear as ASCII art!
+    **How it works**
+    - Characters replace pixels in the bitmap  
+    - Spaces remain empty  
+    - Your message loops automatically  
     """)
-    st.divider()
 
+    # ---------------- INPUT CARD ----------------
+    st.markdown('<div class="bm-card">', unsafe_allow_html=True)
 
-    # Inputs
-    message = st.text_input("Enter your message:")
-    color = st.color_picker("Pick your display color:", "#00FFAA")
+    message = st.text_input("✍️ Enter your message")
+    color = st.color_picker("🎨 Pick display color", "#00FFAA")
+
     speed_choice = st.radio(
-        "Select printing speed:",
+        "⚡ Printing speed",
         ["🐢 Slow", "🐇 Fast", "⚡ Instant"],
         horizontal=True
     )
 
-    if message and st.button("Generate Message"):
-        st.markdown("---")
+    generate = st.button("▶ Generate Message")
+
+    st.markdown('</div>', unsafe_allow_html=True)
+
+    # ---------------- OUTPUT ----------------
+    if message and generate:
+
         output_placeholder = st.empty()
         final_output = ""
 
-        # Set delay based on speed
         delay = 0.1 if speed_choice == "🐢 Slow" else 0.03 if speed_choice == "🐇 Fast" else 0
-
         message_index = 0
+
         for line in bitmap.splitlines():
             output_line = ""
             for c in line:
@@ -60,21 +107,47 @@ def run():
                 else:
                     output_line += message[message_index % len(message)]
                     message_index += 1
+
             final_output += output_line + "\n"
-            # Show progress gradually
+
             if delay > 0:
-                output_placeholder.markdown(f"<pre style='color:{color}'>{final_output}</pre>", unsafe_allow_html=True)
+                output_placeholder.markdown(
+                    f"""
+                    <div class="output-box">
+                        <pre style="color:{color};">{final_output}</pre>
+                    </div>
+                    """,
+                    unsafe_allow_html=True
+                )
                 time.sleep(delay)
 
-        # Final full output
-        output_placeholder.markdown(f"<pre style='color:{color}'>{final_output}</pre>", unsafe_allow_html=True)
+        # Final output
+        output_placeholder.markdown(
+            f"""
+            <div class="output-box">
+                <pre style="color:{color};">{final_output}</pre>
+            </div>
+            """,
+            unsafe_allow_html=True
+        )
 
-        # Save output to file
+        # ---------------- SAVE + DOWNLOAD ----------------
         os.makedirs("outputs", exist_ok=True)
         file_path = os.path.join("outputs", "bitmap_output.txt")
+
         with open(file_path, "w", encoding="utf-8") as f:
             f.write(final_output)
-        
-        st.success(f"✅ Output saved to `{file_path}`")
-        st.download_button("⬇️ Download Output", final_output, "bitmap_output.txt", "text/plain")
 
+        st.success("✅ Output generated successfully!")
+        st.download_button(
+            "⬇️ Download Output",
+            final_output,
+            "bitmap_output.txt",
+            "text/plain"
+        )
+
+    st.markdown('</div>', unsafe_allow_html=True)
+
+
+if __name__ == "__main__":
+    run()
