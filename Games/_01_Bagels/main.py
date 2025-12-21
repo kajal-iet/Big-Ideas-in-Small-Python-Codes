@@ -24,7 +24,37 @@ def get_clues(guess, secret):
 
 def run():
 
-    # ---------------- UI STYLES (ONLY UI) ----------------
+    st.set_page_config(
+        page_title="Responsive App",
+        layout="centered",
+        initial_sidebar_state="collapsed"
+    )
+
+    st.markdown(
+        '<meta name="viewport" content="width=device-width, initial-scale=1.0">',
+        unsafe_allow_html=True
+    )
+
+    st.markdown("""
+    <style>
+    .main-container {
+        max-width: 520px;
+        margin: auto;
+        padding: 10px;
+    }
+    button, input, textarea {
+        font-size: 16px !important;
+    }
+    </style>
+    <div class="main-container">
+    """, unsafe_allow_html=True)
+
+    st.title("📱 Mobile-Friendly Streamlit App")
+    st.text_input("Enter something")
+    st.button("Submit")
+
+    st.markdown("</div>", unsafe_allow_html=True)
+
     st.markdown("""
     <style>
     .game-container {
