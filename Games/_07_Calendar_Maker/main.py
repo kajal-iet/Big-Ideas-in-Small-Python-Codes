@@ -68,6 +68,11 @@ def CalendarMaker(year, month, notes_data):
 
 
 def run():
+    st.set_page_config(
+    page_title="Responsive App",
+    layout="centered",
+    initial_sidebar_state="collapsed"
+    )
     st.title("📅 Smart Calendar with Notes")
 
     st.markdown("""

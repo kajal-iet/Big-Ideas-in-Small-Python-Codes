@@ -33,6 +33,11 @@ def vary_color(hex_color):
 
 
 def run():
+    st.set_page_config(
+    page_title="Responsive App",
+    layout="centered",
+    initial_sidebar_state="collapsed"
+    )
     st.title("🗺️ Bitmap Message — Text Art Generator")
 
     # ---------- MOBILE + OUTPUT CSS ----------

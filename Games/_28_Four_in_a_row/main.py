@@ -61,6 +61,11 @@ def reset_game():
 
 
 def run():
+    st.set_page_config(
+    page_title="Responsive App",
+    layout="centered",
+    initial_sidebar_state="collapsed"
+    )
 
     st.title("Connect 4 🔴🟡")
     st.markdown(
