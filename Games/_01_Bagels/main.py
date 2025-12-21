@@ -101,6 +101,7 @@ def run():
         st.session_state.over = False
         st.session_state.input_key = 0
         st.session_state.score = 0
+        st.session_state.moves_used = 0
         st.rerun()
 
     if "secret" not in st.session_state:
@@ -109,9 +110,10 @@ def run():
         st.session_state.score = 0
         st.session_state.over = False
         st.session_state.input_key = 0
+        st.session_state.moves_used = 0
 
     # ---------------- INFO BAR ----------------
-    remaining = max_guesses - len(st.session_state.guesses)
+    remaining = max_guesses - st.session_state.moves_used
 
     st.markdown(
         f"""
@@ -131,20 +133,22 @@ def run():
     )
 
     if st.button("▶ Submit Guess", disabled=st.session_state.over):
-        if len(guess) == num_digits and guess.isdigit():
-            clue = get_clues(guess, st.session_state.secret)
-            st.session_state.guesses.append((guess, clue))
+     if len(guess) == num_digits and guess.isdigit():
+        clue = get_clues(guess, st.session_state.secret)
+        st.session_state.guesses.append((guess, clue))
+        st.session_state.moves_used += 1  # one move per submit
 
-            if clue == "🎉 You got it!":
-                st.success(f"🎯 Correct! The number was **{st.session_state.secret}**")
-                st.session_state.score += points
-                st.session_state.over = True
+        if clue == "🎉 You got it!":
+            st.success(f"🎯 Correct! The number was **{st.session_state.secret}**")
+            st.session_state.score += points
+            st.session_state.over = True
 
-            elif len(st.session_state.guesses) >= max_guesses:
-                st.error(f"❌ Out of guesses! The number was **{st.session_state.secret}**")
-                st.session_state.over = True
-        else:
-            st.warning(f"⚠️ Enter a valid {num_digits}-digit number")
+        elif st.session_state.moves_used >= max_guesses:
+            st.error(f"❌ Out of guesses! The number was **{st.session_state.secret}**")
+            st.session_state.over = True
+
+        st.rerun()  # 🔑 force UI to update immediately
+
 
     # ---------------- GUESS HISTORY ----------------
     if st.session_state.guesses:
@@ -157,6 +161,7 @@ def run():
         if st.button("🔁 Play Again"):
             st.session_state.secret = generate_secret_number(num_digits)
             st.session_state.guesses = []
+            st.session_state.moves_used = 0
             st.session_state.over = False
             st.session_state.input_key += 1
             st.rerun()

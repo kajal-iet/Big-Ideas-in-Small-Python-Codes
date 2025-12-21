@@ -43,9 +43,6 @@ def run():
     **Birthday Paradox** shows how fast probability rises — even with small groups 🎉
     """)
 
-    # ---------------- INPUT CARD ----------------
-    st.markdown('<div class="bp-card">', unsafe_allow_html=True)
-
     numBDays = st.number_input(
         "👥 Number of people (1–100)",
         1, 100, 23
