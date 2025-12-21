@@ -52,6 +52,7 @@ def run():
         border-radius: 12px;
         background: #f4f6f8;
         text-align: center;
+        color: #000000;
         font-size: 14px;
     }
     input[type="text"] {
@@ -120,7 +121,7 @@ def run():
 
     # ---------------- INFO BAR ----------------
     remaining = max_guesses - st.session_state.moves_used
-
+    
     st.markdown(
         f"""
         <div class="info-bar">

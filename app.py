@@ -115,10 +115,12 @@ button {
     box-shadow: 0 6px 18px rgba(0,0,0,0.05);
     margin-bottom: 18px;
     background: white;
+            
 }
 .game-title {
     font-size: 20px;
     font-weight: 600;
+    color: #000000;
 }
 .game-desc {
     color: #666;
